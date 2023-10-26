@@ -1,18 +1,16 @@
-#include <Arduino.h>
+#include "BluetoothSerial.h"
 
-// put function declarations here:
-int myFunction(int, int);
+BluetoothSerial SerialBT;
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+void setup(){
+
+  SerialBT.begin("Kou'sESP");
+
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
+void loop(){
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  SerialBT.print("send message...");
+  delay(500);
+
 }
