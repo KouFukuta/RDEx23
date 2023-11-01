@@ -3,8 +3,8 @@
 
  ### 進捗2023/11/02
  <dl>
-   <dt>M5側に外*付けマイク用のプログラムに変更</dt>
-      <dd>FFTにも対応させた。[このサイトを参考にした](https://ambidata.io/samples/m5stack/sound/)</dd>
+   <dt>M5側に外付けマイク用のプログラムに変更</dt>
+      <dd>FFTにも対応させた。参考サイト:https://ambidata.io/samples/m5stack/sound/</dd>
       <dd>いちばん振幅の多い周波数を抜き出して、それの値でNeoPixelの色を変更する予定</dd>
       <dd>拾った音の周波数の値が少しおかしい、1kHzを出すと4kHzぐらいの表記になる</dd>
       <dd>今はFFTのスペクトルを表示してあるが、ここをどうするかも考える必要あり</dd>
