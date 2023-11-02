@@ -5,7 +5,7 @@
 
 #define MIC 33
 
-#define SAMPLING_FREQUENCY 4000
+#define SAMPLING_FREQUENCY 40000
 const uint16_t FFTsamples = 256;  // 2のべき乗を入れる
 
 double vReal[FFTsamples];  // vReal[]にサンプリングしたデーターを入れる
@@ -35,11 +35,7 @@ int _width = 320;
 //描画する高さを調整
 float dmax = 5.0;
 
-int maxBand = 0;
-float maxAmplitude = 0;
-float maxFrequency = 0;
-
-//FFT描画
+//FFT & 描画
 void drawChart(int nsamples) {
     int band_width = floor(_width / nsamples);
     int band_pad = band_width - 1;
@@ -52,19 +48,12 @@ void drawChart(int nsamples) {
         
         int h = (int)((d / dmax) * (_height));
         M5.Lcd.fillRect(hpos, _height - h, band_pad, h, WHITE);
-        
-        if(d > maxAmplitude){
-          maxAmplitude = d;
-          maxBand = band;
-        }
 
 
         if ((band % (nsamples / 4)) == 0) {
             M5.Lcd.setCursor(hpos, _height + Y0 - 10);
             M5.Lcd.printf("%.1fkHz", ((band * 1.0 * SAMPLING_FREQUENCY) / FFTsamples / 1000));
 
-            //一番高い振幅を持つ周波数を計算
-            maxFrequency = (maxBand * 1.0 * SAMPLING_FREQUENCY) / FFTsamples / 1000;
         }
     }
 }
@@ -94,6 +83,8 @@ void DCRemoval(double *vData, uint16_t samples) {
     }
 }
 
+
+
 void loop() {
     sample(FFTsamples);
 
@@ -104,7 +95,14 @@ void loop() {
     M5.Lcd.fillScreen(BLACK);
     drawChart(FFTsamples / 2);
 
-    Serial.printf("%fkHz\n",maxFrequency);
+    //ピークの値を取り出す
+    double x = FFT.MajorPeak();
+
+    int peak = x;
+    Serial.printf("%dHz\n", peak);
+
+    delay(10);
+
 }
 
 
