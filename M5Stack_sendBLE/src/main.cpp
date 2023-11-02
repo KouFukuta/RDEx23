@@ -1,3 +1,5 @@
+//M5Core2は送信側
+
 #include <Arduino.h>
 #include <M5Core2.h>
 #include <AXP192.h>//バイブレーション使ってみる
@@ -8,7 +10,6 @@ AXP192 power;
 
 
 bool ONI = true;
-const int THRESH = -20; //タッチ判定をするRSSI値の閾値です。
 
 //Wi-Fi用の設定を以下に書きます　passだけ設定してください
 const char *ssid = "M5_Send";         // SSID
@@ -54,6 +55,7 @@ void setup()
 
   OscWiFi.subscribe(incomingPort, "/rssi", rcv_rssi); //この記述で、runからRSSI値が送られてきた時にrcv_rssi関数が起動するようになります。
 }
+
 
 void loop()
 {

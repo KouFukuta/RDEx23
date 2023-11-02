@@ -43,11 +43,9 @@ void loop()
     rssi += WiFi.RSSI();
   }
   rssi = rssi / -100;
-  Serial.printf("rssi: %d", rssi);
+  Serial.printf("Send RSSI: %d", rssi);
   OscWiFi.send(host, outgoingPort, "/rssi", rssi); //何もない時はRSSI値を送り続けます
-  digitalWrite(LED_BUILTIN, HIGH);
   delay(100);
-  digitalWrite(LED_BUILTIN, LOW);
   OscWiFi.post();
   
   
