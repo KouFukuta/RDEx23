@@ -96,7 +96,7 @@ void loop() {
     drawChart(FFTsamples / 2);
 
     //ピークの値を取り出す
-    double x = FFT.MajorPeak();
+    double x = FFT.MajorPeak(vReal, FFTsamples, SAMPLING_FREQUENCY);
 
     int peak = x;
     Serial.printf("%dHz\n", peak);
