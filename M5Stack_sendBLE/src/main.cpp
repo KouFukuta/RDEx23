@@ -25,7 +25,8 @@ const IPAddress ipClient(192, 168, 1, 255); // client IPアドレス
 const char *host = "192.168.1.255";
 
 
-void rcv_rssi(const OscMessage &msg) //RSSIを受信した時に起動する関数です。
+//RSSIを受信した時に起動する関数です。
+void rcv_rssi(const OscMessage &msg)
 {
   int rssi = msg.arg<int>(0);
 
