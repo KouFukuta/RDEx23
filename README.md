@@ -1,6 +1,22 @@
 # RDEx23
  ## 情報表現領域_展示作品
 
+### 進捗2023/11/09  
+<dl>
+   <dt>RSSI(通信強度)の測定、親機、子機ともにプログラムを作成</dt>
+      <dd>BLE通信は少しやり方がわからなかったので、Wi-Fiで測定</dd>
+      <dd>参考サイト:https://fabcross.jp/category/make/sorem5/20210512_social_distance_onigokko.html</dd>
+      <dd>近くて30付近、3mほど離れるとRSSI:70、5mでもRSSI:80ほどだった</dd>
+   
+   <dt>MajorPeakを使ってFFTのピークの値を取得させてみた</dt>
+      <dd>MajorPeakを使ってピーク値を取得してみたが、たまにピークの値とは全く違う値が取得されるので、見直す必要があるかもしれない。</dd>
+      <dd>参考サイト:https://101010.fun/m5stickc-plus-accel.html</dd>
+
+   <dt>FFTとRSSI取得のプログラムをひとつにまとめた</dt>
+      <dd>一応どちらの値の取得はできるようになったので、これを改変しつつ、本番用に変えていく予定。</dd>
+</dl>
+
+
  ### 進捗2023/11/02
  <dl>
    <dt>M5側に外付けマイク用のプログラムに変更</dt>
