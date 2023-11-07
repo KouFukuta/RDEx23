@@ -5,7 +5,7 @@
 
 #define MIC 33
 
-#define SAMPLING_FREQUENCY 40000
+#define SAMPLING_FREQUENCY 10000
 const uint16_t FFTsamples = 256;  // 2のべき乗を入れる
 
 double vReal[FFTsamples];  // vReal[]にサンプリングしたデーターを入れる
