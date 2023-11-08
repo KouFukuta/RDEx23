@@ -9,8 +9,6 @@
 AXP192 power;
 
 
-bool ONI = true;
-
 //Wi-Fi用の設定を以下に書きます　passだけ設定してください
 const char *ssid = "M5_Send";         // SSID
 const char *pass = "M5rssiii"; // passwordは自由に設定してください
