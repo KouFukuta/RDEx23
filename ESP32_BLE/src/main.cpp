@@ -1,10 +1,15 @@
+//変更予定
+//WiFiMulti.hに変更(複数アクセスポイントに接続できるため)
+//M5側を受信機、ESP側を発信機に変更してみる
+
+//参考サイトhttps://logikara.blog/wifimulti_ntp/
+
 #include <Esp.h>
 
 #include <NimBLEDevice.h>
 #include <Ethernet.h>
 #include <ArduinoOSCWiFi.h>
 
-#define LED_BUILTIN 2
 
 // Wi-Fiの設定です passだけ設定してください
 const char *ssid = "M5_Send";
