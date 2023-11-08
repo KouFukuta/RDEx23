@@ -6,8 +6,8 @@
 
 // Wi-Fiの設定
 // RSSIを読み取るため
-const char *ssid = "M5_Send";  // SSID
-const char *pass = "M5rssiii"; // passwordは自由に設定してください
+const char *ssid = "M5_Send01";  // SSID
+const char *pass = "sendSide01"; // passwordは自由に設定してください
 const int incomingPort = 7070; // 受信ポート番号
 const int outgoingPort = 8080; // 送信ポート番号
 
@@ -146,6 +146,8 @@ void loop()
 
   M5.Lcd.setCursor(0, 40);
   M5.Lcd.printf("peak: %d", peak);
+
+
 
   delay(10);
 }
