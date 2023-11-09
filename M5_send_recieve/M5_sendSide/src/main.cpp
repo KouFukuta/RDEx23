@@ -28,7 +28,8 @@ unsigned int sampling_period_us;
 void sample(int nsamples) {
     for (int i = 0; i < nsamples; i++) {
         unsigned long t = micros();
-        vReal[i] = (double)analogRead(MIC) / 4095.0 * 3.6 + 0.1132; // ESP32のADCの特性を補正
+        //vReal[i] = (double)analogRead(MIC) / 4095.0 * 3.6 + 0.1132; // ESP32のADCの特性を補正
+        vReal[i] = (double)analogRead(MIC);
         vImag[i] = 0;
         while ((micros() - t) < sampling_period_us) ;
     }

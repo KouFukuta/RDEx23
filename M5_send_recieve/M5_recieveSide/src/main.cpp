@@ -2,9 +2,14 @@
 //FFTのPeakを受信する、RSSIを送信する
 //オレンジのほうに書き込む
 
+//いずれはWiFiMultiに対応させて複数アクセスポイントにアクセスできるようにする
+//rssiがいちばん近いM5orESPに接続して、そこで通信をするようにする。
+
 #include <Arduino.h>
 #include <M5Core2.h>
 #include <ArduinoOSCWiFi.h>
+#include <WiFi.h>
+#include <WiFiMulti.h> //いずれ使いたいWiFiMulti
 #include <Adafruit_NeoPixel.h>
 
 //NeoPixelの設定
@@ -13,6 +18,16 @@
 #define NUMPIXELS 24
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+/*
+//ここからWiFiMultiの実装(未完成)
+WiFiMulti wifiMulti;
+
+//2チャンネル分を登録(仮)
+//いずれは5チャンネル分
+wifiMulti.addAP("M5_Send01", "sendSide01");
+wifiMulti.addAP("M5_Send02", "sendSide02");
+*/
 
 
 // Wi-Fiの設定
@@ -27,6 +42,8 @@ const char *host = "192.168.1.255"; //念の為同じネットワーク内の全
 const int incomingPort = 8080; // 受信ポート番号
 const int outgoingPort = 7070; // 送信ポート番号
 
+
+//ここからピーク値を取得するところ
 double peak = 0;
 
 void rcv_peak(const OscMessage &msg)//ピーク値を受信したとき
@@ -35,10 +52,6 @@ void rcv_peak(const OscMessage &msg)//ピーク値を受信したとき
   
   M5.lcd.setCursor(0, 155);
   M5.Lcd.printf("Peak: %2lf", peak);
-
-  //NeoPixel色指定
-
-
 }
 
 
@@ -76,7 +89,6 @@ void setup()
 
   OscWiFi.subscribe(incomingPort, "/peak", rcv_peak);
 
-
 }
 
 void loop()
@@ -100,6 +112,8 @@ void loop()
   int lightPower = map(rssi, 20, 90, 50, 0);
   pixels.setBrightness(lightPower);
 
+  // ピーク値によってグラデーションしたい
+  //今は全部光らせるような設定
   for (int j = 0; j < NUMPIXELS; j++)
   {
     
@@ -133,7 +147,6 @@ void loop()
 
   pixels.show();
 
-
-
   delay(50);
+
 }
