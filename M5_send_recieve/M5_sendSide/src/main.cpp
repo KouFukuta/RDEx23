@@ -13,6 +13,8 @@
 //ここからFFTのやつ
 //外付けマイクのピン指定
 #define MIC 33
+#define DIG_MIC 32
+
 
 #define SAMPLING_FREQUENCY 10000  //ここがおかしいと取れる周波数もおかしくなる
 const uint16_t FFTsamples = 256;  // 2のべき乗を入れる
@@ -35,18 +37,8 @@ void sample(int nsamples) {
     }
 }
 
-//描画位置指定
-int X0 = 30;
-int Y0 = 20;
-
-//描画領域の高さ、幅を指定
-int _height = 240 - Y0;
-int _width = 320;
-
-//描画する高さを調整
-float dmax = 5.0;
-
-//FFT & 描画
+/* 
+//FFT描画
 void drawChart(int nsamples) {
     int band_width = floor(_width / nsamples);
     int band_pad = band_width - 1;
@@ -63,13 +55,15 @@ void drawChart(int nsamples) {
         //M5.Lcd.fillRect(hpos, _height - h, band_pad, h, WHITE);
 
 
-        /* if ((band % (nsamples / 4)) == 0) {
+         if ((band % (nsamples / 4)) == 0) {
             M5.Lcd.setCursor(hpos, _height + Y0 - 10);
             M5.Lcd.printf("%.1fkHz", ((band * 1.0 * SAMPLING_FREQUENCY) / FFTsamples / 1000));
 
-        } */
+        } 
     }
 }
+
+*/
 
 //ノイズ軽減
 void DCRemoval(double *vData, uint16_t samples) {
@@ -117,6 +111,8 @@ void setup()
   M5.Lcd.setTextColor(GREEN, BLACK);
   M5.Lcd.setTextSize(2);
 
+  pinMode(DIG_MIC, INPUT);
+
   WiFi.softAP(ssid, pass);
   delay(100);
   WiFi.softAPConfig(ipServer, ipGateway, subnet);
@@ -147,13 +143,17 @@ void loop()
   //ピークの値を取り出す
   double peak = FFT.MajorPeak(vReal, FFTsamples, SAMPLING_FREQUENCY);
 
+  int dig_res = digitalRead(DIG_MIC);
+
   M5.lcd.setCursor(0, 155);
-  M5.Lcd.printf("Peak: %2lf", peak);
-  OscWiFi.send(host, outgoingPort, "/peak", peak);//ピーク値を常に送信
+  M5.Lcd.printf("Peak: %2lf %1d", peak, dig_res);
+  OscWiFi.send(host, outgoingPort, "/peak", peak);
+  OscWiFi.post();
+  OscWiFi.send(host, outgoingPort, "/dig_res", dig_res);//ピーク値を常に送信
   OscWiFi.post();
 
   
   OscWiFi.parse(); //何もない場合はRecieveからの通信を待ち続けます。
 
-  delay(50);
+  //delay(50);
 }
