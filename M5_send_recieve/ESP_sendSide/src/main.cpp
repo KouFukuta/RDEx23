@@ -80,8 +80,8 @@ void DCRemoval(double *vData, uint16_t samples) {
 
 
 //ここからWi-Fi用の設定
-const char *ssid = "M5_Send01";         // SSID
-const char *pass = "sendSide01"; // passwordは自由に設定してください
+const char *ssid = "M5_Send02";         // SSID
+const char *pass = "sendSide02"; // passwordは自由に設定してください
 const int incomingPort = 7070;       // 受信ポート番号
 const int outgoingPort = 8080;       // 送信ポート番号
 

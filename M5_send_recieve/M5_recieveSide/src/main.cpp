@@ -25,26 +25,25 @@ WiFiMulti wifiMulti;
 //2チャンネル分を登録(仮)
 //いずれは5チャンネル分
 
-/* 
-void wifiConnect()
+/* void wifiConnect()
 {
+
   wifiMulti.addAP("M5_Send01", "sendSide01");
+  wifiMulti.addAP("M5_Send02", "sendSide02");
 
   while(WiFi.status() != WL_CONNECTED)
   {
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setTextColor(GREEN, BLACK);
     M5.Lcd.setCursor(0, 20);
+    M5.Lcd.setTextSize(2);
     M5.Lcd.printf("Wi-Fi Search...");
-    delay(1000);
+    wifiMulti.run();
+    delay(100);
 
     if(WiFi.status() == WL_CONNECTED)
     {
       M5.Lcd.fillScreen(BLACK);
-      M5.Lcd.setTextColor(GREEN, BLACK);
-      M5.Lcd.setCursor(0, 20);
-      M5.Lcd.printf("ssid: ");
-      M5.Lcd.print(WiFi.SSID());
       delay(1000);
     }
 
@@ -54,22 +53,23 @@ void wifiConnect()
       M5.Lcd.setTextColor(RED, BLACK);
       M5.Lcd.setCursor(0, 20);
       M5.Lcd.printf("Wi-Fi Nothing!!");
-      delay(500);
+      WiFi.disconnect();
+      wifiMulti.run();
+      delay(100);
     }
   }
 }
-
  */
 
-
 // Wi-Fiの設定
+/* 
 const char *ssid = "M5_Send01";
 const char *pwd = "sendSide01"; 
 const IPAddress ip(192, 168, 1, 201);
 const IPAddress gateway(192, 168, 1, 1);
 const IPAddress subnet(255, 255, 255, 0);
+*/
 
- 
 
 // for ArduinoOSC
 const char *host = "192.168.1.255"; //念の為同じネットワーク内の全員に送信します
@@ -80,7 +80,7 @@ const int outgoingPort = 7070; // 送信ポート番号
 
 //ここからピーク値を取得するところ
 double peak = 0;
-int dig_res;
+int dig_res = 0;
 
 void rcv_peak(const OscMessage &msg)//ピーク値を受信したとき
 { 
@@ -106,18 +106,22 @@ void setup()
   M5.begin();
   WiFi.begin();
   M5.IMU.Init();
-  M5.Lcd.clearDisplay();
-  M5.Lcd.setTextColor(GREEN, BLACK);
-  M5.Lcd.setTextSize(2);
+
 
   // NeoPixelの初期化
   pixels.begin();
   pixels.setBrightness(0);
 
   //wifiConnect();
+  wifiMulti.addAP("M5_Send01", "sendSide01");
+  wifiMulti.addAP("M5_Send02", "sendSide02");
 
 
-#ifdef ESP_PLATFORM
+  M5.Lcd.clearDisplay();
+  M5.Lcd.setTextColor(GREEN, BLACK);
+  M5.Lcd.setTextSize(2);
+
+/* #ifdef ESP_PLATFORM
   WiFi.disconnect(true, true);
   delay(1000);
   WiFi.mode(WIFI_STA);
@@ -127,11 +131,12 @@ void setup()
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
-  } 
+  }  */
   
-  M5.Lcd.setCursor(0, 20);
+/*   M5.Lcd.setCursor(0, 20);
   M5.Lcd.printf("ssid: ");
-  M5.Lcd.print(WiFi.SSID());
+  M5.Lcd.print(WiFi.SSID()); */
+
   M5.Lcd.setCursor(0, 65);
   M5.Lcd.printf("incomingPort: %d", incomingPort);
   M5.Lcd.setCursor(0, 105);
@@ -145,6 +150,18 @@ void setup()
 
 void loop()
 {
+
+  if(WiFi.status() != WL_CONNECTED || WiFi.status() == WL_DISCONNECTED)
+  {
+    WiFi.disconnect();
+    wifiMulti.run();
+    //delay(1000);
+  }
+  
+  M5.Lcd.setCursor(0, 20);
+  M5.Lcd.printf("ssid: ");
+  M5.Lcd.print(WiFi.SSID());
+
   
   int rssi = 0;
   for (int i = 0; i < 100; i++)
@@ -158,7 +175,7 @@ void loop()
   OscWiFi.send(host, outgoingPort, "/rssi", rssi); //何もない時はRSSI値を送り続けます
   OscWiFi.post();
 
-  OscWiFi.parse();
+  OscWiFi.parse();//sendの通信を待つ
 
 
   //ここからNeoPixel関係
