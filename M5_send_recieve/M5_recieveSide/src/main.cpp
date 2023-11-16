@@ -140,7 +140,7 @@ void setup()
 void loop()
 {
 
-  if (WiFi.status() != WL_CONNECTED || WiFi.status() == WL_DISCONNECTED)
+  if (WiFi.status() != WL_CONNECTED)
   {
     WiFi.disconnect();
     wifiMulti.run();
@@ -218,13 +218,14 @@ void loop()
   // delay(50);
 
   // RSSIの強いアクセスポイントに切り替える
-/*
+  //これを付け加えるとRSSIとピーク値の通信ができなくなる
+/* 
   int scanWifi = WiFi.scanNetworks();
   int scanRssi = 0;
   
-  for (int j = 0; j < scanWifi; j++)
+  for (int k = 0; k < scanWifi; k++)
   {
-    scanRssi += WiFi.RSSI(j);
+    scanRssi += WiFi.RSSI(k);
 
     if (scanRssi > rssi)
     {
@@ -233,6 +234,6 @@ void loop()
       // delay(1000);
     }
   }
-   */
+ */
 
 }
