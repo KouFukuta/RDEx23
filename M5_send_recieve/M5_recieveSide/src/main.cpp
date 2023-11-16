@@ -176,7 +176,7 @@ void loop()
 
   // ここからNeoPixel関係
   int r, g, b;
-  int lightPower = map(rssi, 30, 60, 30, 0);
+  int lightPower = map(rssi, 30, 50, 30, 0);
   pixels.setBrightness(lightPower);
 
   // ピーク値によってグラデーションしたい
