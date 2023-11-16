@@ -167,6 +167,13 @@ void loop()
 
   OscWiFi.parse(); // sendの通信を待つ
 
+//切断するRSSIの値を指定したらできた
+  if(rssi > 50)
+  {
+    WiFi.disconnect();
+    wifiMulti.run();
+  }
+
   // ここからNeoPixel関係
   int r, g, b;
   int lightPower = map(rssi, 30, 60, 30, 0);
