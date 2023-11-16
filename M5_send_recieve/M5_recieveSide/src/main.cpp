@@ -219,13 +219,18 @@ void loop()
 
   // RSSIの強いアクセスポイントに切り替える
   //これを付け加えるとRSSIとピーク値の通信ができなくなる
+  //ESPとM5以外の他のネットワークも拾ってしまっていて、おかしくなっている気がする
 /* 
   int scanWifi = WiFi.scanNetworks();
   int scanRssi = 0;
-  
+
   for (int k = 0; k < scanWifi; k++)
   {
     scanRssi += WiFi.RSSI(k);
+    for (int l = 0; l < 100; l++)
+    {
+      scanRssi = scanRssi / -100;
+    }
 
     if (scanRssi > rssi)
     {
@@ -234,6 +239,10 @@ void loop()
       // delay(1000);
     }
   }
- */
+   */
+
+  //これは一番近いところには接続されるけど、RSSIとかピーク値の更新がされない
+  //切断されすぎて値を取得できていないかもしれない
+  //WiFi.disconnect();
 
 }
