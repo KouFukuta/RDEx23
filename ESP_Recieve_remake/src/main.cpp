@@ -8,6 +8,7 @@ ESP32に書き込む
 #include <Esp.h>
 #include "arduinoFFT.h"
 #include <WiFi.h>
+#include <WiFiUdp.h>
 #include <ArduinoOSCWiFi.h>
 
 
@@ -62,22 +63,18 @@ void DCRemoval(double *vData, uint16_t samples) {
 void setup()
 {
   Serial.begin(115200);
-  
-  WiFi.mode(WIFI_STA);
-  //WiFi.begin(ssid, pass);
-
-  while(WiFi.status() != WL_CONNECTED)
-  {
-    WiFi.begin(ssid, pass);
-  }
+  WiFi.begin(ssid, pass);
+  delay(1000);
 }
 
 void loop()
 {
   if (WiFi.status() != WL_CONNECTED)
   {
+    Serial.print("Wi-Fi Disconnect");
     WiFi.disconnect();
     WiFi.begin(ssid, pass);
+    delay(1000);
   }
 
   //ここからFFT 
@@ -104,10 +101,10 @@ void loop()
   rssi /= -100;
   Serial.printf("rssi: %d\n", rssi);
 
-  OscWiFi.send(host, outgoingPort, "/peak2", peak);
-  OscWiFi.send(host, outgoingPort, "/dig_res2", dig_res);
-  OscWiFi.send(host, outgoingPort, "/rssi2", rssi);
+  //ここからデータ送信
+  OscWiFi.publish(host, outgoingPort, "/data", rssi, dig_res, peak);
   OscWiFi.post();
 
-  delay(50);
+  delay(200);
+
 }
