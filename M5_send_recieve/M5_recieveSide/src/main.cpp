@@ -12,6 +12,8 @@
 #include <WiFiMulti.h> //いずれ使いたいWiFiMulti
 #include <Adafruit_NeoPixel.h>
 
+
+
 // NeoPixelの設定
 #define PIN 32
 #define NUMPIXELS 24
@@ -106,6 +108,7 @@ void setup()
   // wifiConnect();
   wifiMulti.addAP("M5_Send01", "sendSide01");
   wifiMulti.addAP("M5_Send02", "sendSide02");
+  wifiMulti.addAP("M5_Send03", "sendSide03");
 
   M5.Lcd.clearDisplay();
   M5.Lcd.setTextColor(GREEN, BLACK);
@@ -239,7 +242,7 @@ void loop()
       scanRssi = scanRssi / -100;
     }
 
-    if (scanRssi > rssi)
+    if (scanRssi < rssi)
     {
       WiFi.disconnect();
       wifiMulti.run();
