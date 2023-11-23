@@ -7,7 +7,7 @@ Wi-Fiを繋ぎなおすタイムラグが減るのではないか
 #include <M5Core2.h>
 #include <Ethernet.h>
 #include <ArduinoOSCWiFi.h>
-#include <WiFiUdp.h>
+//#include <WiFiUdp.h>
 #include <Adafruit_NeoPixel.h>
 
 //ジャイロ操作でパンニングぶん回したい
@@ -36,13 +36,12 @@ const IPAddress subnet(255, 255, 255, 0);   // サブネットマスク
 const IPAddress ipClient(192, 168, 1, 255); // client IPアドレス
 const char *host = "192.168.1.255";
 
-/* 
+
 //BLEMouseの設定
 BleMouse bleMouse("GyloMouse");
 signed char mouse_x = 0;
 signed char mouse_y = 0;
 float mouse_min = 200;
- */
 
 float accX = 0;
 float accY = 0;
@@ -52,6 +51,7 @@ float gyroX = 0;
 float gyroY = 0;
 float gyroZ = 0;
 
+ 
 //受信した各データをここで格納
 int rssi[] = {};
 int dig_res[] = {};
@@ -62,10 +62,12 @@ void rcv_data(const OscMessage &msg)
   int Number = msg.arg<int>(0);
 
   rssi[Number] = msg.arg<int>(1);
+  Serial.printf("%d",rssi[Number]);
+  
   dig_res[Number] = msg.arg<int>(2);
   peak[Number] = msg.arg<double>(3);
 }
-/* 
+ 
 void move_mouse()
 {
   M5.IMU.getGyroData(&gyroX,&gyroY,&gyroZ);
@@ -94,7 +96,6 @@ void move_mouse()
   bleMouse.move(mouse_x, mouse_y);
   delay(20);
 }
- */
 
 void setup()
 {
@@ -111,7 +112,7 @@ void setup()
 
   //BLEMouseの設定
   M5.IMU.Init();
-  //bleMouse.begin();
+  bleMouse.begin();
 
   WiFi.softAP(ssid, pass);
   delay(100);
@@ -132,25 +133,24 @@ void setup()
 void loop()
 {
   //BLEMouse
-  //move_mouse();
+  move_mouse();
 
-  int strongRssi = rssi[0];
-  int digitalMic = dig_res[0];
-  double freqPeak = peak[0];
 
-/* 
-  for(int i = 0; i < 1; i++)
+  //  配列使うとおかしい
+  int strongRssi;
+  int digitalMic;
+  double freqPeak;
+
+  for(int i = 0; i <= 1; i++)
   {
-    if(rssi[i] < strongRssi)
+    if(rssi[i] <= strongRssi)
     {
       strongRssi = rssi[i];
-      strongPoint = i;
-      
       digitalMic = dig_res[i];
       freqPeak = peak[i];
     }
   }
- */
+ 
 
   M5.Lcd.setCursor(0, 155);
   M5.Lcd.printf("peak: %2lf", freqPeak);

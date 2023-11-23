@@ -7,8 +7,8 @@ ESP32に書き込む
 #include <Arduino.h>
 #include <Esp.h>
 #include "arduinoFFT.h"
-#include <WiFi.h>
-#include <WiFiUdp.h>
+//#include <WiFi.h>
+//#include <WiFiUdp.h>
 #include <ArduinoOSCWiFi.h>
 
 //個体番号
