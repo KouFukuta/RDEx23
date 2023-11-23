@@ -12,7 +12,7 @@ ESP32に書き込む
 #include <ArduinoOSCWiFi.h>
 
 //個体番号
-#define NUMBER 1
+int Number = 0;
 
 
 //Wi-Fiの設定
@@ -105,6 +105,7 @@ void loop()
   Serial.printf("rssi: %d\n", rssi);
 
   //ここからデータ送信
-  OscWiFi.publish(host, outgoingPort, "/data", NUMBER, rssi, dig_res, peak);
+  OscWiFi.send(host, outgoingPort, "/data", Number, rssi, dig_res, peak);
   OscWiFi.post();
+
 }

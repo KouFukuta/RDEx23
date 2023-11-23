@@ -10,9 +10,11 @@ Wi-Fiを繋ぎなおすタイムラグが減るのではないか
 //#include <WiFiUdp.h>
 #include <Adafruit_NeoPixel.h>
 
+/* 
 //ジャイロ操作でパンニングぶん回したい
 #include <BleConnectionStatus.h>
 #include <BleMouse.h>
+ */
 
 //NeoPixel関連
 #define PIN 32
@@ -36,7 +38,7 @@ const IPAddress subnet(255, 255, 255, 0);   // サブネットマスク
 const IPAddress ipClient(192, 168, 1, 255); // client IPアドレス
 const char *host = "192.168.1.255";
 
-
+/* 
 //BLEMouseの設定
 BleMouse bleMouse("GyloMouse");
 signed char mouse_x = 0;
@@ -50,7 +52,7 @@ float accZ = 0;
 float gyroX = 0;
 float gyroY = 0;
 float gyroZ = 0;
-
+ */
  
 //受信した各データをここで格納
 int rssi[] = {};
@@ -59,15 +61,21 @@ double peak[] = {};
 
 void rcv_data(const OscMessage &msg)
 {
-  int Number = msg.arg<int>(0);
+  //ここでは正常
+  int Number = 0; //msg.arg<int>(0);
+  Serial.printf("No.: %d\n", Number);
 
   rssi[Number] = msg.arg<int>(1);
-  Serial.printf("%d",rssi[Number]);
-  
+  Serial.printf("rssi: %d\n", rssi[Number]);
+
   dig_res[Number] = msg.arg<int>(2);
+  Serial.printf("digitalMic: %d\n", dig_res[Number]);
+
   peak[Number] = msg.arg<double>(3);
+  Serial.printf("peak: %lf\n\n", peak[Number]);
 }
- 
+
+/*  
 void move_mouse()
 {
   M5.IMU.getGyroData(&gyroX,&gyroY,&gyroZ);
@@ -94,8 +102,8 @@ void move_mouse()
     mouse_y = 1 * (accY * 1000) / mouse_min;
   }
   bleMouse.move(mouse_x, mouse_y);
-  delay(20);
 }
+*/
 
 void setup()
 {
@@ -110,19 +118,19 @@ void setup()
   bottoms.begin();
   pixels.setBrightness(0);
 
-  //BLEMouseの設定
+/*   //BLEMouseの設定
   M5.IMU.Init();
-  bleMouse.begin();
+  bleMouse.begin(); */
 
   WiFi.softAP(ssid, pass);
   delay(100);
   WiFi.softAPConfig(ipServer, ipGateway, subnet);
   M5.Lcd.setCursor(0, 20);
-  M5.Lcd.printf("ssid: %s", ssid);
+  M5.Lcd.print(ssid);
   M5.Lcd.setCursor(0, 65);
-  M5.Lcd.printf("incomingPort: %d", incomingPort);
+  M5.Lcd.print(incomingPort);
   M5.Lcd.setCursor(0, 105);
-  M5.Lcd.printf("outgoingPort: %d", outgoingPort);
+  M5.Lcd.print(outgoingPort);
 
   //OSC通信でデータを受け取る、rcv_data起動
   OscWiFi.subscribe(incomingPort, "/data", rcv_data);
@@ -133,34 +141,36 @@ void setup()
 void loop()
 {
   //BLEMouse
-  move_mouse();
+  /* move_mouse(); */
 
+  int i = 0;
 
   //  配列使うとおかしい
-  int strongRssi;
-  int digitalMic;
-  double freqPeak;
+  int strongRssi = rssi[i];
+  int digitalMic = dig_res[i];
+  double freqPeak = peak[i];
 
+  
+/* 
   for(int i = 0; i <= 1; i++)
   {
-    if(rssi[i] <= strongRssi)
+    if(rssi[i] < strongRssi)
     {
       strongRssi = rssi[i];
       digitalMic = dig_res[i];
       freqPeak = peak[i];
     }
   }
- 
+  */
+
+  strongRssi = rssi[i];
+  digitalMic = dig_res[i];
+  freqPeak = peak[i];
 
   M5.Lcd.setCursor(0, 155);
-  M5.Lcd.printf("peak: %2lf", freqPeak);
-  Serial.printf("peak: %2lf\n", freqPeak);
-
-  Serial.printf("digitalMic: %d\n", digitalMic);
-
+  M5.Lcd.print(freqPeak);
   M5.Lcd.setCursor(0, 195);
-  M5.Lcd.printf("rssi: %d", strongRssi);
-  Serial.printf("rssi: %d\n", strongRssi);
+  M5.Lcd.print(strongRssi);
 
   //ここからNeoPixel関係
   int r, g, b;
