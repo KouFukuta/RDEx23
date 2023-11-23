@@ -11,6 +11,9 @@ ESP32に書き込む
 #include <WiFiUdp.h>
 #include <ArduinoOSCWiFi.h>
 
+//個体番号
+#define NUMBER 1
+
 
 //Wi-Fiの設定
 const char *ssid = "M5_Send_Temochi";
@@ -69,7 +72,7 @@ void setup()
 
 void loop()
 {
-  if (WiFi.status() != WL_CONNECTED)
+  while(WiFi.status() != WL_CONNECTED)
   {
     Serial.print("Wi-Fi Disconnect");
     WiFi.disconnect();
@@ -102,9 +105,6 @@ void loop()
   Serial.printf("rssi: %d\n", rssi);
 
   //ここからデータ送信
-  OscWiFi.publish(host, outgoingPort, "/data", rssi, dig_res, peak);
+  OscWiFi.publish(host, outgoingPort, "/data", NUMBER, rssi, dig_res, peak);
   OscWiFi.post();
-
-  delay(200);
-
 }
