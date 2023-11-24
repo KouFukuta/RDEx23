@@ -60,7 +60,7 @@ double peak[2];
 void rcv_data(const OscMessage &msg)
 {
   //ここでは正常
-  int Number = 0; //msg.arg<int>(0);
+  int Number = msg.arg<int>(0);
   Serial.printf("No.: %d\n", Number);
 
   rssi[Number] = msg.arg<int>(1);
@@ -137,38 +137,39 @@ void loop()
   //BLEMouse
   move_mouse();
 
+  //  配列使うとおかしい
+  int strongRssi;
+  int digitalMic;
+  double freqPeak;
+  int device = 0;
+
   int i = 0;
 
-  //  配列使うとおかしい
-  int strongRssi = rssi[i];
-  int digitalMic = dig_res[i];
-  double freqPeak = peak[i];
-
-  
-/* 
-  for(int i = 0; i <= 1; i++)
+  if(rssi[i] < rssi[i+1])
   {
-    if(rssi[i] < strongRssi)
-    {
-      strongRssi = rssi[i];
-      digitalMic = dig_res[i];
-      freqPeak = peak[i];
-    }
-  }
-  */
+    strongRssi = rssi[i];
+    digitalMic = dig_res[i];
+    freqPeak = peak[i];
 
-  strongRssi = rssi[i];
-  digitalMic = dig_res[i];
-  freqPeak = peak[i];
+    device = i;
+  }
+  else
+  {
+    strongRssi = rssi[i+1];
+    digitalMic = dig_res[i+1];
+    freqPeak = peak[i+1];  
+
+    device = i + 1;
+  }
 
   M5.Lcd.setCursor(0, 65);
-  M5.Lcd.print(incomingPort);
+  M5.Lcd.printf("Device: Device%d", device);
   M5.Lcd.setCursor(0, 105);
-  M5.Lcd.print(outgoingPort);
+  M5.Lcd.printf("DigitalMic: %d", digitalMic);
   M5.Lcd.setCursor(0, 155);
-  M5.Lcd.print(freqPeak);
+  M5.Lcd.printf("Peak: %lf", freqPeak);
   M5.Lcd.setCursor(0, 195);
-  M5.Lcd.print(strongRssi);
+  M5.Lcd.printf("RSSI: %d", strongRssi);
 
   //ここからNeoPixel関係
   int r, g, b;

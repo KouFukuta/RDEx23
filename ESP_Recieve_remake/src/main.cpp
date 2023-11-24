@@ -12,7 +12,7 @@ ESP32に書き込む
 #include <ArduinoOSCWiFi.h>
 
 //個体番号
-int Number = 0;
+int Number = 3;
 
 
 //Wi-Fiの設定
