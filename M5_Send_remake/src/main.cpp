@@ -13,6 +13,7 @@ Wi-Fiを繋ぎなおすタイムラグが減るのではないか
 #include <BleConnectionStatus.h>
 #include <BleMouse.h>
 
+#define DEVICE_COUNT 4
 
 //NeoPixel関連
 #define PIN 32
@@ -53,9 +54,9 @@ float gyroZ = 0;
 
  
 //受信した各データをここで格納
-int rssi[2];
-int dig_res[2];
-double peak[2];
+int rssi[DEVICE_COUNT] = {};
+int dig_res[DEVICE_COUNT] = {};
+double peak[DEVICE_COUNT] = {};
 
 void rcv_data(const OscMessage &msg)
 {
@@ -137,39 +138,95 @@ void loop()
   //BLEMouse
   move_mouse();
 
-  //  配列使うとおかしい
-  int strongRssi;
-  int digitalMic;
-  double freqPeak;
+  int strongRssi = rssi[0];
+  int digitalMic = dig_res[0];
+  double freqPeak = peak[0];
   int device = 0;
 
-  int i = 0;
-
-  if(rssi[i] < rssi[i+1])
+  if (strongRssi > rssi[0])
   {
-    strongRssi = rssi[i];
-    digitalMic = dig_res[i];
-    freqPeak = peak[i];
+    strongRssi = rssi[1];
+    digitalMic = dig_res[1];
+    freqPeak = peak[1];
+    device = 1;
+  }
 
-    device = i;
+/* 
+  //これは動く(2個の時)
+  if(rssi[0] < rssi[1])
+  {
+    strongRssi = rssi[0];
+    digitalMic = dig_res[0];
+    freqPeak = peak[0];
+    device = 0;
   }
   else
   {
-    strongRssi = rssi[i+1];
-    digitalMic = dig_res[i+1];
-    freqPeak = peak[i+1];  
-
-    device = i + 1;
+    strongRssi = rssi[1];
+    digitalMic = dig_res[1];
+    freqPeak = peak[1];
+    device = 1;
   }
+ */
+/* 
+  この場合は
+  int strongRssi = 10000
+  をしていた
+
+  if (rssi[0] < strongRssi)
+  {
+    strongRssi = rssi[0];
+    digitalMic = dig_res[0];
+    freqPeak = peak[0];
+    device = 0;
+  }
+  if (rssi[1] < strongRssi)
+  {
+    strongRssi = rssi[1];
+    digitalMic = dig_res[1];
+    freqPeak = peak[1];
+    device = 1;
+  }
+  if (rssi[2] < strongRssi)
+  {
+    strongRssi = rssi[2];
+    digitalMic = dig_res[2];
+    freqPeak = peak[2];
+    device = 2;
+  }
+  if (rssi[3] < strongRssi)
+  {
+    strongRssi = rssi[3];
+    digitalMic = dig_res[3];
+    freqPeak = peak[3];
+    device = 3;
+  }
+*/
+
+/* 
+  これだとすべての表示が0になる。
+  for (int i = 0; i < DEVICE_COUNT; i++)
+  {
+    if (rssi[i] < strongRssi)
+    {
+      strongRssi = rssi[i];
+      digitalMic = dig_res[i];
+      freqPeak = peak[i];
+      device = i;
+    }
+  } 
+  */
+  Serial.print(strongRssi);
+
 
   M5.Lcd.setCursor(0, 65);
-  M5.Lcd.printf("Device: Device%d", device);
+  M5.Lcd.print(device);
   M5.Lcd.setCursor(0, 105);
-  M5.Lcd.printf("DigitalMic: %d", digitalMic);
+  M5.Lcd.print(digitalMic);
   M5.Lcd.setCursor(0, 155);
-  M5.Lcd.printf("Peak: %lf", freqPeak);
+  M5.Lcd.print(freqPeak);
   M5.Lcd.setCursor(0, 195);
-  M5.Lcd.printf("RSSI: %d", strongRssi);
+  M5.Lcd.print(strongRssi);
 
   //ここからNeoPixel関係
   int r, g, b;
