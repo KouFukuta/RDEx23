@@ -13,7 +13,8 @@ Wi-Fiを繋ぎなおすタイムラグが減るのではないか
 #include <BleConnectionStatus.h>
 #include <BleMouse.h>
 
-#define DEVICE_COUNT 2
+//デバイスの数を入力
+#define DEVICE_COUNT 3
 
 //NeoPixel関連
 #define PIN 32
@@ -58,8 +59,14 @@ int rssi[DEVICE_COUNT] = {};
 int dig_res[DEVICE_COUNT] = {};
 double peak[DEVICE_COUNT] = {};
 
+int strongRssi;
+int digitalMic;
+double freqPeak;
+int device = 0;
+
 void rcv_data(const OscMessage &msg)
 {
+  device = 0;
   //ここでは正常
   int Number = msg.arg<int>(0);
   Serial.printf("No.: %d\n", Number);
@@ -72,8 +79,17 @@ void rcv_data(const OscMessage &msg)
 
   peak[Number] = msg.arg<double>(3);
   Serial.printf("peak: %lf\n\n", peak[Number]);
-}
 
+  for(int i = 0; i < DEVICE_COUNT; i++)
+  {
+    if(rssi[i] < rssi[device])
+    {
+      device = i;
+      
+    }
+  }
+  Serial.print(device);
+}
 
 void move_mouse()
 {
@@ -133,83 +149,105 @@ void setup()
   delay(1000);
 }
 
+
 void loop()
 {
+  OscWiFi.update();
+
   //BLEMouse
   move_mouse();
 
-  int strongRssi;
-  int digitalMic;
-  double freqPeak;
-  int device;
-
-
-  //これは動く(2個の時)
-  //ピーク値と光り方が少しだけおかしいけど
-  if(rssi[0] < rssi[1])
+/*   for (i = 0; i < DEVICE_COUNT; i++)
   {
-    strongRssi = rssi[0];
-    digitalMic = dig_res[0];
-    freqPeak = peak[0];
-    device = 0;
-  }
-  else
-  {
-    strongRssi = rssi[1];
-    digitalMic = dig_res[1];
-    freqPeak = peak[1];
-    device = 1;
-  }
- 
-/* 
-  この場合は
-  int strongRssi = 10000
-  をしていた
-
-  if (rssi[0] < strongRssi)
-  {
-    strongRssi = rssi[0];
-    digitalMic = dig_res[0];
-    freqPeak = peak[0];
-    device = 0;
-  }
-  if (rssi[1] < strongRssi)
-  {
-    strongRssi = rssi[1];
-    digitalMic = dig_res[1];
-    freqPeak = peak[1];
-    device = 1;
-  }
-  if (rssi[2] < strongRssi)
-  {
-    strongRssi = rssi[2];
-    digitalMic = dig_res[2];
-    freqPeak = peak[2];
-    device = 2;
-  }
-  if (rssi[3] < strongRssi)
-  {
-    strongRssi = rssi[3];
-    digitalMic = dig_res[3];
-    freqPeak = peak[3];
-    device = 3;
-  }
-*/
-
-/* 
-  これだとすべての表示が0になる。
-  for (int i = 0; i < DEVICE_COUNT; i++)
-  {
-    if (rssi[i] < strongRssi)
     {
-      strongRssi = rssi[i];
-      digitalMic = dig_res[i];
-      freqPeak = peak[i];
+    if (rssi[i] < strongRssi)
       device = i;
     }
-  } 
+  } */
+
+  strongRssi = rssi[device];
+  digitalMic = dig_res[device];
+  freqPeak = peak[device];
+
+
+  /*
+    //これは動く(2個の時)
+    //ピーク値と光り方が少しだけおかしいけど
+    if(rssi[0] < rssi[1])
+    {
+      strongRssi = rssi[0];
+      digitalMic = dig_res[0];
+      freqPeak = peak[0];
+      device = 0;
+    }
+
+    else
+    {
+      strongRssi = rssi[1];
+      digitalMic = dig_res[1];
+      freqPeak = peak[1];
+      device = 1;
+    }
+
+   */
+
+  /*
+    上以外の方法で
+    strongRssi = rssi[0];
+
+    if(rssi[1] < strongRssi)
+    {
+      strongRssi = rssi[1];
+    }
+
+    のような書き方でもできた覚えがある。
+    (デバイスが2つの場合は)
   */
-  Serial.print(strongRssi);
+
+  /*
+    この場合は
+    int strongRssi = rssi[0];
+    をしていた
+
+    if (rssi[1] < strongRssi)
+    {
+      strongRssi = rssi[1];
+      digitalMic = dig_res[1];
+      freqPeak = peak[1];
+      device = 1;
+    }
+    if (rssi[2] < strongRssi)
+    {
+      strongRssi = rssi[2];
+      digitalMic = dig_res[2];
+      freqPeak = peak[2];
+      device = 2;
+    }
+    if (rssi[3] < strongRssi)
+    {
+      strongRssi = rssi[3];
+      digitalMic = dig_res[3];
+      freqPeak = peak[3];
+      device = 3;
+    }
+  */
+
+  /*
+    これだとすべての表示が0になる。
+    for (int i = 0; i < DEVICE_COUNT; i++)
+    {
+      if (rssi[i] < strongRssi)
+      {
+        strongRssi = rssi[i];
+        digitalMic = dig_res[i];
+        freqPeak = peak[i];
+        device = i;
+      }
+    }
+    */
+
+
+  //Serial.print(strongRssi);
 
 
   M5.Lcd.setCursor(0, 65);
@@ -264,9 +302,5 @@ void loop()
 
   pixels.show();
   bottoms.show();
-
-  //データを待つ
-  //OscWiFi.parse();
-  OscWiFi.update();
 
 }

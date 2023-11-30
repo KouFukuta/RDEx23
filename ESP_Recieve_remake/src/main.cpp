@@ -12,7 +12,7 @@ ESP32に書き込む
 #include <ArduinoOSCWiFi.h>
 
 //個体番号
-int Number = 1;
+int Number = 3;
 
 
 //Wi-Fiの設定
@@ -89,12 +89,10 @@ void loop()
 
   //ピークの値を取り出す
   double peak = FFT.MajorPeak(vReal, FFTsamples, SAMPLING_FREQUENCY);
-  Serial.printf("peak: %lf\n", peak);
-
+  
   //デジタルマイクの値を取得
   int dig_res = digitalRead(DIG_MIC);
-  Serial.printf("digitalMic: %d\n", dig_res);
-
+  
   //ここからRSSI取得
   int rssi = 0;
   for(int i = 0; i < 100; i++)
@@ -102,7 +100,11 @@ void loop()
     rssi += WiFi.RSSI();
   }
   rssi /= -100;
+
+  Serial.printf("No.: %d\n", Number);
   Serial.printf("rssi: %d\n", rssi);
+  Serial.printf("digitalMic: %d\n", dig_res);
+  Serial.printf("peak: %lf\n\n", peak);
 
   //ここからデータ送信
   OscWiFi.send(host, outgoingPort, "/data", Number, rssi, dig_res, peak);
