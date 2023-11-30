@@ -13,7 +13,7 @@ Wi-Fiを繋ぎなおすタイムラグが減るのではないか
 #include <BleConnectionStatus.h>
 #include <BleMouse.h>
 
-#define DEVICE_COUNT 4
+#define DEVICE_COUNT 2
 
 //NeoPixel関連
 #define PIN 32
@@ -138,21 +138,14 @@ void loop()
   //BLEMouse
   move_mouse();
 
-  int strongRssi = rssi[0];
-  int digitalMic = dig_res[0];
-  double freqPeak = peak[0];
-  int device = 0;
+  int strongRssi;
+  int digitalMic;
+  double freqPeak;
+  int device;
 
-  if (strongRssi > rssi[0])
-  {
-    strongRssi = rssi[1];
-    digitalMic = dig_res[1];
-    freqPeak = peak[1];
-    device = 1;
-  }
 
-/* 
   //これは動く(2個の時)
+  //ピーク値と光り方が少しだけおかしいけど
   if(rssi[0] < rssi[1])
   {
     strongRssi = rssi[0];
@@ -167,7 +160,7 @@ void loop()
     freqPeak = peak[1];
     device = 1;
   }
- */
+ 
 /* 
   この場合は
   int strongRssi = 10000
