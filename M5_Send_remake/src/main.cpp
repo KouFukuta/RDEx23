@@ -9,12 +9,18 @@ Wi-Fiを繋ぎなおすタイムラグが減るのではないか
 #include <ArduinoOSCWiFi.h>
 #include <Adafruit_NeoPixel.h>
 
-//ジャイロ操作でパンニングぶん回したい
+//ジャイロでパンニング操作
 #include <BleConnectionStatus.h>
 #include <BleMouse.h>
 
+//画面描画
+#include <LovyanGFX.hpp>
+#include <LGFX_AUTODETECT.hpp>
+static LGFX lcd;
+static LGFX_Sprite sprite(&lcd);
+
 //デバイスの数を入力
-#define DEVICE_COUNT 3
+#define DEVICE_COUNT 4
 
 //NeoPixel関連
 #define PIN 32
@@ -67,28 +73,27 @@ int device = 0;
 void rcv_data(const OscMessage &msg)
 {
   device = 0;
-  //ここでは正常
+
   int Number = msg.arg<int>(0);
-  Serial.printf("No.: %d\n", Number);
+  //Serial.printf("No.: %d\n", Number);
 
   rssi[Number] = msg.arg<int>(1);
-  Serial.printf("rssi: %d\n", rssi[Number]);
+  //Serial.printf("rssi: %d\n", rssi[Number]);
 
   dig_res[Number] = msg.arg<int>(2);
-  Serial.printf("digitalMic: %d\n", dig_res[Number]);
+  //Serial.printf("digitalMic: %d\n", dig_res[Number]);
 
   peak[Number] = msg.arg<double>(3);
-  Serial.printf("peak: %lf\n\n", peak[Number]);
+  //Serial.printf("peak: %lf\n\n", peak[Number]);
 
   for(int i = 0; i < DEVICE_COUNT; i++)
   {
     if(rssi[i] < rssi[device])
     {
       device = i;
-      
     }
   }
-  Serial.print(device);
+  //Serial.print(device);
 }
 
 void move_mouse()
@@ -101,24 +106,19 @@ void move_mouse()
   mouse_y = 0;
 
   if(accX * 1000 > mouse_min)
-  {
-    mouse_x = -1 * (accX * 1000) / mouse_min;
-  }
+    mouse_x = -1 * (accX * 2000) / mouse_min;
+
   if(accX * 1000 < mouse_min * -1)
-  {
-    mouse_x = -1 * (accX * 1000) / mouse_min;
-  }
+    mouse_x = -1 * (accX * 2000) / mouse_min;
+
   if(accY * 1000 > mouse_min)
-  {
-    mouse_y = 1 * (accY * 1000) / mouse_min;
-  }
+    mouse_y = 1 * (accY * 2000) / mouse_min;
+
   if(accY * 1000 < mouse_min * -1)
-  {
-    mouse_y = 1 * (accY * 1000) / mouse_min;
-  }
+    mouse_y = 1 * (accY * 2000) / mouse_min;
+
   bleMouse.move(mouse_x, mouse_y);
 }
-
 
 void setup()
 {
@@ -128,6 +128,15 @@ void setup()
   M5.Lcd.setTextColor(GREEN, BLACK);
   M5.Lcd.setTextSize(2);
 
+  lcd.init(); 
+  lcd.setRotation(1);
+  lcd.setBrightness(200);
+
+  sprite.setPsram(true);
+  sprite.setColorDepth(8);
+  sprite.createSprite(320, 240);
+  lcd.clear();
+  
   //NeoPixelの設定
   pixels.begin();
   bottoms.begin();
@@ -140,124 +149,39 @@ void setup()
   WiFi.softAP(ssid, pass);
   delay(100);
   WiFi.softAPConfig(ipServer, ipGateway, subnet);
-  M5.Lcd.setCursor(0, 20);
-  M5.Lcd.print(ssid);
+  lcd.setTextSize(1);
+  lcd.setCursor(0, 20);
+  lcd.print(ssid);
 
   //OSC通信でデータを受け取る、rcv_data起動
   OscWiFi.subscribe(incomingPort, "/data", rcv_data);
 
   delay(1000);
+  
 }
-
 
 void loop()
 {
+  sprite.clear();
+
   OscWiFi.update();
 
   //BLEMouse
   move_mouse();
 
-/*   for (i = 0; i < DEVICE_COUNT; i++)
-  {
-    {
-    if (rssi[i] < strongRssi)
-      device = i;
-    }
-  } */
-
+  //強度の強いRSSIの子機のデータを代入
   strongRssi = rssi[device];
   digitalMic = dig_res[device];
   freqPeak = peak[device];
-
-
-  /*
-    //これは動く(2個の時)
-    //ピーク値と光り方が少しだけおかしいけど
-    if(rssi[0] < rssi[1])
-    {
-      strongRssi = rssi[0];
-      digitalMic = dig_res[0];
-      freqPeak = peak[0];
-      device = 0;
-    }
-
-    else
-    {
-      strongRssi = rssi[1];
-      digitalMic = dig_res[1];
-      freqPeak = peak[1];
-      device = 1;
-    }
-
-   */
-
-  /*
-    上以外の方法で
-    strongRssi = rssi[0];
-
-    if(rssi[1] < strongRssi)
-    {
-      strongRssi = rssi[1];
-    }
-
-    のような書き方でもできた覚えがある。
-    (デバイスが2つの場合は)
-  */
-
-  /*
-    この場合は
-    int strongRssi = rssi[0];
-    をしていた
-
-    if (rssi[1] < strongRssi)
-    {
-      strongRssi = rssi[1];
-      digitalMic = dig_res[1];
-      freqPeak = peak[1];
-      device = 1;
-    }
-    if (rssi[2] < strongRssi)
-    {
-      strongRssi = rssi[2];
-      digitalMic = dig_res[2];
-      freqPeak = peak[2];
-      device = 2;
-    }
-    if (rssi[3] < strongRssi)
-    {
-      strongRssi = rssi[3];
-      digitalMic = dig_res[3];
-      freqPeak = peak[3];
-      device = 3;
-    }
-  */
-
-  /*
-    これだとすべての表示が0になる。
-    for (int i = 0; i < DEVICE_COUNT; i++)
-    {
-      if (rssi[i] < strongRssi)
-      {
-        strongRssi = rssi[i];
-        digitalMic = dig_res[i];
-        freqPeak = peak[i];
-        device = i;
-      }
-    }
-    */
-
-
-  //Serial.print(strongRssi);
-
-
-  M5.Lcd.setCursor(0, 65);
+   
+/*   M5.Lcd.setCursor(0, 65);
   M5.Lcd.print(device);
   M5.Lcd.setCursor(0, 105);
   M5.Lcd.print(digitalMic);
   M5.Lcd.setCursor(0, 155);
   M5.Lcd.print(freqPeak);
   M5.Lcd.setCursor(0, 195);
-  M5.Lcd.print(strongRssi);
+  M5.Lcd.print(strongRssi); */
 
   //ここからNeoPixel関係
   int r, g, b;
@@ -300,7 +224,32 @@ void loop()
     bottoms.setBrightness(0);
   }
 
+  //ディスプレイ上で傾きを可視化したい
+  int plotX, plotY;
+  int scale = 1;
+  int moveMin = 200;
+
+  plotX = 160 - scale * (90.0 / 3.1415 * 2 * asin(accX));
+  plotY = 120 + scale * (90.0 / 3.1415 * 2 * asin(accY));
+
+  if (plotX > 250)
+    plotX = 250;
+  if (plotX < 70)
+    plotX = 70;
+  if (plotY > 210)
+    plotY = 210;
+  if (plotY < 30)
+    plotY = 30;
+
+  sprite.drawLine(70, 120, 250, 120, WHITE);
+  sprite.drawLine(160, 30, 160, 210, WHITE);
+  sprite.drawCircle(160, 120, 30, WHITE);
+  sprite.drawCircle(160, 120, 60, WHITE);
+  sprite.drawCircle(160, 120, 90, WHITE);
+  sprite.fillCircle(plotX, plotY, 10, YELLOW);
+
   pixels.show();
   bottoms.show();
 
+  sprite.pushSprite(0, 0);
 }
