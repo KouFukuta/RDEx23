@@ -12,6 +12,7 @@ ESP32に書き込む
 #include <ArduinoOSCWiFi.h>
 
 //個体番号
+//ここの番号を子機ごとに変えて書き込む
 int Number = 3;
 
 
