@@ -75,16 +75,16 @@ void rcv_data(const OscMessage &msg)
   device = 0;
 
   int Number = msg.arg<int>(0);
-  //Serial.printf("No.: %d\n", Number);
+  Serial.printf("No.: %d\n", Number);
 
   rssi[Number] = msg.arg<int>(1);
-  //Serial.printf("rssi: %d\n", rssi[Number]);
+  Serial.printf("rssi: %d\n", rssi[Number]);
 
   dig_res[Number] = msg.arg<int>(2);
-  //Serial.printf("digitalMic: %d\n", dig_res[Number]);
+  Serial.printf("digitalMic: %d\n", dig_res[Number]);
 
   peak[Number] = msg.arg<double>(3);
-  //Serial.printf("peak: %lf\n\n", peak[Number]);
+  Serial.printf("peak: %lf\n\n", peak[Number]);
 
   for(int i = 0; i < DEVICE_COUNT; i++)
   {
@@ -93,7 +93,7 @@ void rcv_data(const OscMessage &msg)
       device = i;
     }
   }
-  //Serial.print(device);
+  Serial.print(device);
 }
 
 void move_mouse()
@@ -214,10 +214,32 @@ void loop()
         r = 255;
         g = map(freqPeak, 901, 1200, 255, 0);
       }
+
+      switch (device)
+      {
+      case 0:
+        sprite.drawCircleHelper(160, 120, 95, 0x1, YELLOW);
+        break;
+
+      case 1:
+        sprite.drawCircleHelper(160, 120, 95, 0x2, YELLOW);
+        break;
+
+      case 2:
+        sprite.drawCircleHelper(160, 120, 95, 0x8, YELLOW);
+        break;
+
+      case 3:
+        sprite.drawCircleHelper(160, 120, 95, 0x4, YELLOW);
+        break;
+      }
+
       pixels.setPixelColor(j, pixels.Color(r, g, b));
       bottoms.setPixelColor(j, bottoms.Color(r, g, b));
+
     }
   }
+  
   else
   {
     pixels.setBrightness(0);
