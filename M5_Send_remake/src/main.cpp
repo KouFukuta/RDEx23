@@ -218,25 +218,28 @@ void loop()
       switch (device)
       {
       case 0:
-        sprite.drawCircleHelper(160, 120, 95, 0x1, YELLOW);
+        //sprite.drawCircleHelper(160, 120, 95, 0x1, YELLOW);
+        sprite.fillArc(160, 120, 95, 100, 180, 270, YELLOW);
         break;
 
       case 1:
-        sprite.drawCircleHelper(160, 120, 95, 0x2, YELLOW);
+        //sprite.drawCircleHelper(160, 120, 95, 0x2, YELLOW);
+        sprite.fillArc(160, 120, 95, 100, 270, 0, YELLOW);
         break;
 
       case 2:
-        sprite.drawCircleHelper(160, 120, 95, 0x8, YELLOW);
+        //sprite.drawCircleHelper(160, 120, 95, 0x8, YELLOW);
+        sprite.fillArc(160, 120, 95, 100, 90, 180, YELLOW);
         break;
 
       case 3:
-        sprite.drawCircleHelper(160, 120, 95, 0x4, YELLOW);
+        //sprite.drawCircleHelper(160, 120, 95, 0x4, YELLOW);
+        sprite.fillArc(160, 120, 95, 100, 0, 90, YELLOW);
         break;
       }
 
       pixels.setPixelColor(j, pixels.Color(r, g, b));
       bottoms.setPixelColor(j, bottoms.Color(r, g, b));
-
     }
   }
   
@@ -263,6 +266,11 @@ void loop()
   if (plotY < 30)
     plotY = 30;
 
+  sprite.setTextDatum(4);
+  sprite.drawCentreString("Front-L", 70, 10, 2);
+  sprite.drawCentreString("Front-R", 250, 10, 2);
+  sprite.drawCentreString("Rear-L", 70, 210, 2);
+  sprite.drawCentreString("Rear-R", 250, 210, 2);
   sprite.drawLine(70, 120, 250, 120, WHITE);
   sprite.drawLine(160, 30, 160, 210, WHITE);
   sprite.drawCircle(160, 120, 30, WHITE);
