@@ -100,7 +100,6 @@ void move_mouse()
 {
   M5.IMU.getGyroData(&gyroX,&gyroY,&gyroZ);
   M5.IMU.getAccelData(&accX,&accY,&accZ);
-  M5.update();
 
   mouse_x = 0;
   mouse_y = 0;
@@ -118,6 +117,8 @@ void move_mouse()
     mouse_y = 1 * (accY * 2000) / mouse_min;
 
   bleMouse.move(mouse_x, mouse_y);
+  bleMouse.press(MOUSE_LEFT);
+
 }
 
 void setup()
@@ -125,7 +126,6 @@ void setup()
   M5.begin();
   Serial.begin(115200);
   M5.Lcd.clearDisplay();
-  M5.Lcd.setTextColor(GREEN, BLACK);
   M5.Lcd.setTextSize(2);
 
   lcd.init(); 
@@ -282,4 +282,5 @@ void loop()
   bottoms.show();
 
   sprite.pushSprite(0, 0);
-}
+
+} 
