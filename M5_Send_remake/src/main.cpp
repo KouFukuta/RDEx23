@@ -185,6 +185,7 @@ void loop()
 
   //ここからNeoPixel関係
   int r, g, b;
+  //実際の広さで試して調節する
   int lightPower = map(strongRssi, 30, 50, 30, 0);
 
   pixels.setBrightness(lightPower);
@@ -219,22 +220,22 @@ void loop()
       {
       case 0:
         //sprite.drawCircleHelper(160, 120, 95, 0x1, YELLOW);
-        sprite.fillArc(160, 120, 95, 100, 180, 270, YELLOW);
+        sprite.fillArc(160, 120, 110, 115, 180, 270, YELLOW);
         break;
 
       case 1:
         //sprite.drawCircleHelper(160, 120, 95, 0x2, YELLOW);
-        sprite.fillArc(160, 120, 95, 100, 270, 0, YELLOW);
+        sprite.fillArc(160, 120, 110, 115, 270, 0, YELLOW);
         break;
 
       case 2:
         //sprite.drawCircleHelper(160, 120, 95, 0x8, YELLOW);
-        sprite.fillArc(160, 120, 95, 100, 90, 180, YELLOW);
+        sprite.fillArc(160, 120, 110, 115, 90, 180, YELLOW);
         break;
 
       case 3:
         //sprite.drawCircleHelper(160, 120, 95, 0x4, YELLOW);
-        sprite.fillArc(160, 120, 95, 100, 0, 90, YELLOW);
+        sprite.fillArc(160, 120, 110, 115, 0, 90, YELLOW);
         break;
       }
 
@@ -242,7 +243,6 @@ void loop()
       bottoms.setPixelColor(j, bottoms.Color(r, g, b));
     }
   }
-  
   else
   {
     pixels.setBrightness(0);
@@ -251,31 +251,32 @@ void loop()
 
   //ディスプレイ上で傾きを可視化したい
   int plotX, plotY;
-  int scale = 1;
-  int moveMin = 200;
+  float avrX = 0, avrY = 0;
+  float scale = 1.5;
+  int moveMin = 100;
 
   plotX = 160 - scale * (90.0 / 3.1415 * 2 * asin(accX));
   plotY = 120 + scale * (90.0 / 3.1415 * 2 * asin(accY));
 
-  if (plotX > 250)
-    plotX = 250;
-  if (plotX < 70)
-    plotX = 70;
-  if (plotY > 210)
-    plotY = 210;
-  if (plotY < 30)
-    plotY = 30;
+  if (plotX > 270)
+    plotX = 270;
+  if (plotX < 50)
+    plotX = 50;
+  if (plotY > 230)
+    plotY = 230;
+  if (plotY < 10)
+    plotY = 10;
 
   sprite.setTextDatum(4);
-  sprite.drawCentreString("Front-L", 70, 10, 2);
-  sprite.drawCentreString("Front-R", 250, 10, 2);
-  sprite.drawCentreString("Rear-L", 70, 210, 2);
-  sprite.drawCentreString("Rear-R", 250, 210, 2);
-  sprite.drawLine(70, 120, 250, 120, WHITE);
-  sprite.drawLine(160, 30, 160, 210, WHITE);
-  sprite.drawCircle(160, 120, 30, WHITE);
-  sprite.drawCircle(160, 120, 60, WHITE);
-  sprite.drawCircle(160, 120, 90, WHITE);
+  sprite.drawCentreString("Front-L", 50, 10, 2);
+  sprite.drawCentreString("Front-R", 270, 10, 2);
+  sprite.drawCentreString("Rear-L", 50, 210, 2);
+  sprite.drawCentreString("Rear-R", 270, 210, 2);
+  sprite.drawLine(60, 120, 260, 120, WHITE);
+  sprite.drawLine(160, 20, 160, 220, WHITE);
+  sprite.drawCircle(160, 120, 35, WHITE);
+  sprite.drawCircle(160, 120, 70, WHITE);
+  sprite.drawCircle(160, 120, 105, WHITE);
   sprite.fillCircle(plotX, plotY, 10, YELLOW);
 
   pixels.show();
