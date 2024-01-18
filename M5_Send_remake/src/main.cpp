@@ -26,11 +26,11 @@ static LGFX_Sprite sprite(&lcd);
 #define PIN 32
 #define NUMPIXELS 24
 
-#define bottomLED 25
-#define NUMBOTTOMS 10
+//#define bottomLED 25
+//#define NUMBOTTOMS 10
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel bottoms(NUMBOTTOMS, bottomLED + NEO_KHZ800);
+//Adafruit_NeoPixel bottoms(NUMBOTTOMS, bottomLED + NEO_KHZ800);
 
 //ここからWi-Fiの設定
 const char *ssid = "M5_Send_Temochi";
@@ -117,7 +117,7 @@ void move_mouse()
     mouse_y = 1 * (accY * 2000) / mouse_min;
 
   bleMouse.move(mouse_x, mouse_y);
-  bleMouse.press(MOUSE_LEFT);
+  //bleMouse.press(MOUSE_LEFT);
 
 }
 
@@ -139,7 +139,7 @@ void setup()
   
   //NeoPixelの設定
   pixels.begin();
-  bottoms.begin();
+  //bottoms.begin();
   pixels.setBrightness(0);
 
   //BLEMouseの設定
@@ -186,10 +186,10 @@ void loop()
   //ここからNeoPixel関係
   int r, g, b;
   //実際の広さで試して調節する
-  int lightPower = map(strongRssi, 30, 50, 30, 0);
+  int lightPower = map(strongRssi, 30, 60, 20, 0);
 
   pixels.setBrightness(lightPower);
-  bottoms.setBrightness(lightPower);
+  //bottoms.setBrightness(lightPower);
   
   if (digitalMic == 1)
   {
@@ -216,72 +216,72 @@ void loop()
         g = map(freqPeak, 901, 1200, 255, 0);
       }
 
-      switch (device)
-      {
-      case 0:
-        //sprite.drawCircleHelper(160, 120, 95, 0x1, YELLOW);
-        sprite.fillArc(160, 120, 110, 115, 180, 270, YELLOW);
-        break;
+      // switch (device)
+      // {
+      // case 0:
+      //   //sprite.drawCircleHelper(160, 120, 95, 0x1, YELLOW);
+      //   sprite.fillArc(160, 120, 110, 115, 180, 270, YELLOW);
+      //   break;
 
-      case 1:
-        //sprite.drawCircleHelper(160, 120, 95, 0x2, YELLOW);
-        sprite.fillArc(160, 120, 110, 115, 270, 0, YELLOW);
-        break;
+      // case 1:
+      //   //sprite.drawCircleHelper(160, 120, 95, 0x2, YELLOW);
+      //   sprite.fillArc(160, 120, 110, 115, 270, 0, YELLOW);
+      //   break;
 
-      case 2:
-        //sprite.drawCircleHelper(160, 120, 95, 0x8, YELLOW);
-        sprite.fillArc(160, 120, 110, 115, 90, 180, YELLOW);
-        break;
+      // case 2:
+      //   //sprite.drawCircleHelper(160, 120, 95, 0x8, YELLOW);
+      //   sprite.fillArc(160, 120, 110, 115, 90, 180, YELLOW);
+      //   break;
 
-      case 3:
-        //sprite.drawCircleHelper(160, 120, 95, 0x4, YELLOW);
-        sprite.fillArc(160, 120, 110, 115, 0, 90, YELLOW);
-        break;
-      }
+      // case 3:
+      //   //sprite.drawCircleHelper(160, 120, 95, 0x4, YELLOW);
+      //   sprite.fillArc(160, 120, 110, 115, 0, 90, YELLOW);
+      //   break;
+      // }
 
       pixels.setPixelColor(j, pixels.Color(r, g, b));
-      bottoms.setPixelColor(j, bottoms.Color(r, g, b));
+      //bottoms.setPixelColor(j, bottoms.Color(r, g, b));
     }
   }
   else
   {
     pixels.setBrightness(0);
-    bottoms.setBrightness(0);
+    //bottoms.setBrightness(0);
   }
 
   //ディスプレイ上で傾きを可視化したい
-  int plotX, plotY;
-  float avrX = 0, avrY = 0;
-  float scale = 1.5;
-  int moveMin = 100;
+  // int plotX, plotY;
+  // float avrX = 0, avrY = 0;
+  // float scale = 1.5;
+  // int moveMin = 100;
 
-  plotX = 160 - scale * (90.0 / 3.1415 * 2 * asin(accX));
-  plotY = 120 + scale * (90.0 / 3.1415 * 2 * asin(accY));
+  // plotX = 160 - scale * (90.0 / 3.1415 * 2 * asin(accX));
+  // plotY = 120 + scale * (90.0 / 3.1415 * 2 * asin(accY));
 
-  if (plotX > 270)
-    plotX = 270;
-  if (plotX < 50)
-    plotX = 50;
-  if (plotY > 230)
-    plotY = 230;
-  if (plotY < 10)
-    plotY = 10;
+  // if (plotX > 270)
+  //   plotX = 270;
+  // if (plotX < 50)
+  //   plotX = 50;
+  // if (plotY > 230)
+  //   plotY = 230;
+  // if (plotY < 10)
+  //   plotY = 10;
 
-  sprite.setTextDatum(4);
-  sprite.drawCentreString("Front-L", 50, 10, 2);
-  sprite.drawCentreString("Front-R", 270, 10, 2);
-  sprite.drawCentreString("Rear-L", 50, 210, 2);
-  sprite.drawCentreString("Rear-R", 270, 210, 2);
-  sprite.drawLine(60, 120, 260, 120, WHITE);
-  sprite.drawLine(160, 20, 160, 220, WHITE);
-  sprite.drawCircle(160, 120, 35, WHITE);
-  sprite.drawCircle(160, 120, 70, WHITE);
-  sprite.drawCircle(160, 120, 105, WHITE);
-  sprite.fillCircle(plotX, plotY, 10, YELLOW);
+  // sprite.setTextDatum(4);
+  // sprite.drawCentreString("Front-L", 50, 10, 2);
+  // sprite.drawCentreString("Front-R", 270, 10, 2);
+  // sprite.drawCentreString("Rear-L", 50, 210, 2);
+  // sprite.drawCentreString("Rear-R", 270, 210, 2);
+  // sprite.drawLine(60, 120, 260, 120, WHITE);
+  // sprite.drawLine(160, 20, 160, 220, WHITE);
+  // sprite.drawCircle(160, 120, 35, WHITE);
+  // sprite.drawCircle(160, 120, 70, WHITE);
+  // sprite.drawCircle(160, 120, 105, WHITE);
+  // sprite.fillCircle(plotX, plotY, 10, YELLOW);
 
   pixels.show();
-  bottoms.show();
+  //bottoms.show();
 
-  sprite.pushSprite(0, 0);
+  //sprite.pushSprite(0, 0);
 
 } 
