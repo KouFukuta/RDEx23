@@ -46,7 +46,8 @@ const char *host = "192.168.1.255";
 
 
 //BLEMouseの設定
-BleMouse bleMouse("GyloMouse");
+//BleMouse bleMouse("M5Mouse");
+BleMouse bleMouse("M5Mouse_2nd");
 signed char mouse_x = 0;
 signed char mouse_y = 0;
 float mouse_min = 200;
@@ -99,7 +100,7 @@ void rcv_data(const OscMessage &msg)
 void move_mouse()
 {
   M5.IMU.getGyroData(&gyroX,&gyroY,&gyroZ);
-  M5.IMU.getAccelData(&accX,&accY,&accZ);
+  M5.IMU.getAccelData(&accX,&accY,&accZ);  
 
   mouse_x = 0;
   mouse_y = 0;
@@ -119,6 +120,7 @@ void move_mouse()
   bleMouse.move(mouse_x, mouse_y);
   //bleMouse.press(MOUSE_LEFT);
 
+  delay(10);
 }
 
 void setup()
@@ -130,7 +132,7 @@ void setup()
 
   lcd.init(); 
   lcd.setRotation(1);
-  lcd.setBrightness(200);
+  lcd.setBrightness(100);
 
   sprite.setPsram(true);
   sprite.setColorDepth(8);
@@ -162,7 +164,11 @@ void setup()
 
 void loop()
 {
-  sprite.clear();
+  while(bleMouse.isConnected() == false) {
+    delay(100);
+  }
+  
+  //sprite.clear();
 
   OscWiFi.update();
 
@@ -186,7 +192,7 @@ void loop()
   //ここからNeoPixel関係
   int r, g, b;
   //実際の広さで試して調節する
-  int lightPower = map(strongRssi, 30, 60, 20, 0);
+  int lightPower = map(strongRssi, 20, 45, 10, 2);
 
   pixels.setBrightness(lightPower);
   //bottoms.setBrightness(lightPower);
@@ -240,6 +246,7 @@ void loop()
       // }
 
       pixels.setPixelColor(j, pixels.Color(r, g, b));
+      
       //bottoms.setPixelColor(j, bottoms.Color(r, g, b));
     }
   }
@@ -248,7 +255,7 @@ void loop()
     pixels.setBrightness(0);
     //bottoms.setBrightness(0);
   }
-
+  delay(10);
   //ディスプレイ上で傾きを可視化したい
   // int plotX, plotY;
   // float avrX = 0, avrY = 0;
@@ -280,8 +287,9 @@ void loop()
   // sprite.fillCircle(plotX, plotY, 10, YELLOW);
 
   pixels.show();
-  //bottoms.show();
+  delay(10);
 
+  //bottoms.show();
   //sprite.pushSprite(0, 0);
 
 } 
